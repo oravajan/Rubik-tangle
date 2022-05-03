@@ -4,11 +4,15 @@
 
 #include <thread>
 #include <algorithm>
+#include <fstream>
 #include "Solver.h"
 
-Solver::Solver(const std::vector<Card> & cards) : m_cards(cards) {}
+void Solver::Solve(const std::string & fileName, std::ostream & out) {
+    if(!LoadFromFile(fileName)) {
+        out << "Error with file " << fileName << "\n";
+        return;
+    }
 
-bool Solver::Solve() {
     std::thread t1(&Solver::SolveWorker, this, std::pair<int, int>{0, 0});
     std::thread t2(&Solver::SolveWorker, this, std::pair<int, int>{0, 1});
     std::thread t3(&Solver::SolveWorker, this, std::pair<int, int>{1, 1});
@@ -17,9 +21,36 @@ bool Solver::Solve() {
     t2.join();
     t3.join();
 
-    if(m_hasSolution)
-        return true;
-    return false;
+    PrintSolution(out);
+}
+
+bool Solver::LoadFromFile(const std::string & filename) {
+    std::ifstream file(filename);
+    if(!file)
+        return false;
+    int id;
+    char col1, col2;
+    std::vector<std::pair<Color, Color>> colors;
+    std::string validColors = "RGBY";
+
+    for(int cardsCnt = 0; cardsCnt < 9; ++cardsCnt) {
+        file >> id;
+        if(id < 1 || id > 9)
+            return false;
+
+        colors.clear();
+        for(int orientation = 0; orientation < 8; ++orientation) {
+            file >> col1 >> col2;
+            if (validColors.find(col1) == std::string::npos)
+                return false;
+            if (validColors.find(col2) == std::string::npos)
+                return false;
+            colors.emplace_back((Color)col1, (Color)col2);
+        }
+
+        m_cards.emplace_back(colors, id);
+    }
+    return true;
 }
 
 void Solver::SolveWorker(std::pair<int, int> startPosition) {
@@ -30,7 +61,7 @@ void Solver::SolveWorker(std::pair<int, int> startPosition) {
     availableCards.pop_back();
     availablePositions = MakeNeighbours(startPosition, availablePositions, solution);
 
-    for(int i = 0; i < 8; ++i) {  // Tries all rotations of first card
+    for(int orientation = 0; orientation < 8; ++orientation) {  // Tries all rotations of first card
         SolveRec(availableCards, availablePositions, solution);
         if(m_hasSolution)  // Ends if solution was found, even in other thread
             return;
@@ -126,6 +157,10 @@ bool Solver::CanBePlaced(const Card & card,
 }
 
 void Solver::PrintSolution(std::ostream & out) const {
+    if(!m_hasSolution) {
+        out << "Solution was not found!\n";
+        return;
+    }
     out << "Solution was found!\n\n";
 
     out << "IDs:\n";

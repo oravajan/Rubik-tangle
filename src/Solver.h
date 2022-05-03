@@ -6,23 +6,22 @@
 
 #include <vector>
 #include <array>
+#include <iostream>
 #include "Card.h"
 
 class Solver
 {
 public:
-    explicit Solver(const std::vector<Card> & cards);
+    Solver() = default;
 
     /**
-     * Solves Rubik's tangle puzzle
+     * Solves Rubik's tangle puzzle given in file and prints solution to outputstream
      * Creates 3 threads, 1. tries start from top-left
      *                    2. tries start from first row, second column
      *                    3. tries start from mid
      * First card must be in one option, other solutions are just solution board rotations
-     *
-     * @return true if solution was found
      */
-    bool Solve();
+    void Solve(const std::string & fileName, std::ostream & out);
     /**
      * Prints solution in human readable text
      */
@@ -32,6 +31,13 @@ private:
     std::array<std::array<Card, 3>, 3> m_solution;  // There will be solution
     bool m_hasSolution = false;
 
+    /**
+     * Creates Cards from given file
+     *
+     * @param fileName Text file with cards
+     * @return true if no error occurred
+     */
+    bool LoadFromFile(const std::string & fileName);
     /**
      * Thread function, initializes all variables and call SolveRec
      *

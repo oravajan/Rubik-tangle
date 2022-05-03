@@ -1,14 +1,15 @@
 //
 // Created by Jan Orava on 30.04.2022.
 //
-#include <iostream>
-#include <vector>
 
 #pragma once
 
+#include <iostream>
+#include <vector>
+
 enum class Orientation{TOP = 0, RIGHT, DOWN, LEFT};
 
-enum class Color{RED, GREEN, BLUE, YELLOW};
+enum class Color : char {RED = 'R', GREEN = 'G', BLUE = 'B', YELLOW = 'Y'};
 /**
  * Puts string representation to ostream
  * It uses escape codes to print colored text in terminal

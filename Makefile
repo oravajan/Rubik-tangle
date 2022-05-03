@@ -3,11 +3,12 @@ LD = g++
 CXXFLAGS = -Wall -pedantic -O3 -Wextra -Wno-long-long -std=c++14 -pthread
 TARGET = rubiks_tangle
 OBJS = build/Card.o build/Solver.o build/main.o
+INPUT = input/cards.txt
 
 all: compile
 
 run: compile
-	./${TARGET}
+	./${TARGET} ${INPUT}
 
 compile: deps ${TARGET}
 
