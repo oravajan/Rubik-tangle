@@ -32,7 +32,7 @@ public:
      *   7  4    15    12
      *    65      14 13
      *
-     * @param colors Colors of tangles on card
+     * @param colors Colors of ropes on card
      * @param id ID of card, used for printing solution
      */
     Card(const std::vector<std::pair<Color, Color>> & colors,
